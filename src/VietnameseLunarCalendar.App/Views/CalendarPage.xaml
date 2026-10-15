@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="VietnameseLunarCalendar.App.Views.CalendarPage"
+    x:Name="CalendarPageRoot"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:vm="clr-namespace:VietnameseLunarCalendar.App.ViewModels"
+    Title="Lịch"
+    BackgroundColor="#F7F5F0">
+    <ScrollView>
+        <VerticalStackLayout Padding="20,18,20,28" Spacing="18">
+            <Grid ColumnDefinitions="*,Auto" VerticalOptions="Center">
+                <VerticalStackLayout Spacing="2">
+                    <Label Text="ÂM DƯƠNG LỊCH" FontSize="12" CharacterSpacing="2" TextColor="#A43126" FontAttributes="Bold" />
+                    <Label Text="Lịch Việt Nam" FontSize="28" FontAttributes="Bold" TextColor="#252B2A" />
+                </VerticalStackLayout>
+                <Button Grid.Column="1" Text="Hôm nay" Command="{Binding GoToTodayCommand}"
+                        BackgroundColor="#EEE9DF" TextColor="#252B2A" CornerRadius="18" Padding="16,8" />
+            </Grid>
+
+            <Border Padding="14" BackgroundColor="White" Stroke="#E9E4DA" StrokeShape="RoundRectangle 20">
+                <VerticalStackLayout Spacing="12">
+                    <Grid ColumnDefinitions="48,*,48" VerticalOptions="Center">
+                        <Button Text="‹" FontSize="28" TextColor="#A43126" BackgroundColor="Transparent" Padding="0"
+                                Command="{Binding PreviousMonthCommand}" IsEnabled="{Binding CanGoPrevious}" />
+                        <Label Grid.Column="1" Text="{Binding MonthTitle}" FontSize="20" FontAttributes="Bold"
+                               HorizontalTextAlignment="Center" VerticalTextAlignment="Center" TextColor="#252B2A" />
+                        <Button Grid.Column="2" Text="›" FontSize="28" TextColor="#A43126" BackgroundColor="Transparent" Padding="0"
+                                Command="{Binding NextMonthCommand}" IsEnabled="{Binding CanGoNext}" />
+                    </Grid>
+                    <Grid ColumnDefinitions="*,*,*,*,*,*,*" ColumnSpacing="0">
+                        <Label Text="T2" HorizontalTextAlignment="Center" TextColor="#777B76" FontAttributes="Bold" />
+                        <Label Grid.Column="1" Text="T3" HorizontalTextAlignment="Center" TextColor="#777B76" FontAttributes="Bold" />
+                        <Label Grid.Column="2" Text="T4" HorizontalTextAlignment="Center" TextColor="#777B76" FontAttributes="Bold" />
+                        <Label Grid.Column="3" Text="T5" HorizontalTextAlignment="Center" TextColor="#777B76" FontAttributes="Bold" />
+                        <Label Grid.Column="4" Text="T6" HorizontalTextAlignment="Center" TextColor="#777B76" FontAttributes="Bold" />
+                        <Label Grid.Column="5" Text="T7" HorizontalTextAlignment="Center" TextColor="#A43126" FontAttributes="Bold" />
+                        <Label Grid.Column="6" Text="CN" HorizontalTextAlignment="Center" TextColor="#A43126" FontAttributes="Bold" />
+                    </Grid>
+                    <CollectionView ItemsSource="{Binding Days}" SelectionMode="None" HeightRequest="300"
+                                    ItemsLayout="VerticalGrid, 7" ItemSizingStrategy="MeasureFirstItem">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="vm:CalendarDayViewModel">
+                                <Border Margin="2" Padding="1" HeightRequest="46" Stroke="Transparent"
+                                        BackgroundColor="{Binding BackgroundColor}" StrokeShape="RoundRectangle 12">
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding BindingContext.SelectDateCommand, Source={x:Reference CalendarPageRoot}}"
+                                                              CommandParameter="{Binding .}" />
+                                    </Border.GestureRecognizers>
+                                    <VerticalStackLayout Spacing="0" VerticalOptions="Center" HorizontalOptions="Center">
+                                        <Label Text="{Binding GregorianDay}" FontSize="15" FontAttributes="Bold"
+                                               TextColor="{Binding TextColor}" HorizontalTextAlignment="Center" />
+                                        <Label Text="{Binding LunarDay}" FontSize="9" TextColor="{Binding TextColor}"
+                                               HorizontalTextAlignment="Center" />
+                                    </VerticalStackLayout>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                        <BoxView WidthRequest="8" HeightRequest="8" CornerRadius="4" Color="#A43126" VerticalOptions="Center" />
+                        <Label Grid.Column="1" Text="Ngày được chọn" FontSize="12" TextColor="#777B76" VerticalTextAlignment="Center" />
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
+
+            <Border Padding="18" BackgroundColor="#F0EADF" Stroke="Transparent" StrokeShape="RoundRectangle 20">
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="NGÀY ĐANG XEM" FontSize="11" CharacterSpacing="1.5" TextColor="#777B76" FontAttributes="Bold" />
+                    <Label Text="{Binding SelectedGregorian}" FontSize="18" FontAttributes="Bold" TextColor="#252B2A" />
+                    <Label Text="{Binding SelectedLunar}" FontSize="15" TextColor="#A43126" />
+                    <DatePicker Date="{Binding SelectedDate, Mode=TwoWay}" MinimumDate="{Binding MinimumDate}"
+                                MaximumDate="{Binding MaximumDate}" Format="dd/MM/yyyy"
+                                TextColor="#252B2A" />
+                </VerticalStackLayout>
+            </Border>
+            <Label Text="Lịch âm Việt Nam · múi giờ UTC+7 · hoạt động ngoại tuyến" FontSize="12"
+                   TextColor="#777B76" HorizontalTextAlignment="Center" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

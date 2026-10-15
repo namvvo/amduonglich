@@ -1,0 +1,23 @@
+bin/
+obj/
+.vs/
+.vscode/
+*.user
+*.suo
+*.db
+TestResults/
+
+# Rider
+.idea/
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Logs
+*.log
+
+# Aspire
+aspire-manifest.json
