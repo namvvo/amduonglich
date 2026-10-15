@@ -1,6 +1,5 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Diagnostics;
 using VietnameseLunarCalendar.Domain.Interfaces;
@@ -21,7 +20,8 @@ public partial class CalendarViewModel : ObservableObject
 	[ObservableProperty]
 	private DateTime selectedDate;
 
-	public ObservableCollection<CalendarDayViewModel> Days { get; } = new();
+	[ObservableProperty]
+	private IReadOnlyList<CalendarDayViewModel> days = Array.Empty<CalendarDayViewModel>();
 	public string MonthTitle => DisplayedMonth.ToString("MMMM yyyy", vietnamese);
 	public string SelectedGregorian => SelectedDate.ToString("dddd, dd MMMM yyyy", vietnamese);
 	public string SelectedLunar
@@ -49,10 +49,13 @@ public partial class CalendarViewModel : ObservableObject
 
 	partial void OnDisplayedMonthChanged(DateTime value)
 	{
+		var navigationTimer = Stopwatch.StartNew();
 		OnPropertyChanged(nameof(MonthTitle));
 		OnPropertyChanged(nameof(CanGoPrevious));
 		OnPropertyChanged(nameof(CanGoNext));
 		RefreshMonth();
+		navigationTimer.Stop();
+		Debug.WriteLine($"Calendar month navigation {value:yyyy-MM}: {navigationTimer.Elapsed.TotalMilliseconds:F3} ms (synchronous view-model operation; UI layout is asynchronous).");
 	}
 
 	partial void OnSelectedDateChanged(DateTime value)
@@ -66,9 +69,10 @@ public partial class CalendarViewModel : ObservableObject
 			DisplayedMonth = new DateTime(value.Year, value.Month, 1);
 		else
 		{
-			UpdateSelectedCell(previousDate, false);
-			UpdateSelectedCell(value.Date, true);
-		}
+            UpdateSelectedCell(previousDate, value.Date);
+            //UpdateSelectedCell(previousDate, false);
+            //UpdateSelectedCell(value.Date, true);
+        }
 		OnPropertyChanged(nameof(SelectedLunar));
 		timer.Stop();
 		Debug.WriteLine($"Calendar date selection: {timer.Elapsed.TotalMilliseconds:F3} ms (same month: {DisplayedMonth.Year == value.Year && DisplayedMonth.Month == value.Month}).");
@@ -103,37 +107,61 @@ public partial class CalendarViewModel : ObservableObject
 	private void RefreshMonth()
 	{
 		var timer = Stopwatch.StartNew();
-		Days.Clear();
+		var dayBuildTimer = Stopwatch.StartNew();
+		var nextDays = new List<CalendarDayViewModel>(42);
 		displayedMonthLunar.Clear();
 		var first = new DateTime(DisplayedMonth.Year, DisplayedMonth.Month, 1);
 		var offset = ((int)first.DayOfWeek + 6) % 7;
-		for (var i = 0; i < offset; i++) Days.Add(CalendarDayViewModel.Blank);
+		for (var i = 0; i < offset; i++) nextDays.Add(CalendarDayViewModel.Blank);
 		var count = DateTime.DaysInMonth(first.Year, first.Month);
+		var conversionTimer = Stopwatch.StartNew();
 		for (var day = 1; day <= count; day++)
 		{
 			var date = new DateTime(first.Year, first.Month, day);
 			var lunar = calendar.GregorianToLunar(DateOnly.FromDateTime(date));
 			displayedMonthLunar[DateOnly.FromDateTime(date)] = lunar;
-			Days.Add(new CalendarDayViewModel(date, lunar.Day == 1 ? lunar.Month.ToString() : lunar.Day.ToString(),
+			nextDays.Add(new CalendarDayViewModel(date, lunar.Day == 1 ? lunar.Month.ToString() : lunar.Day.ToString(),
 				date.Date == SelectedDate.Date, date.Date == DateTime.Today.Date));
 		}
-		while (Days.Count % 7 != 0) Days.Add(CalendarDayViewModel.Blank);
+		conversionTimer.Stop();
+		while (nextDays.Count < 42) nextDays.Add(CalendarDayViewModel.Blank);
+		dayBuildTimer.Stop();
+		Days = nextDays.ToArray();
 		timer.Stop();
-		Debug.WriteLine($"Calendar month refresh {first:yyyy-MM}: {timer.Elapsed.TotalMilliseconds:F3} ms; {count} date conversions.");
+		Debug.WriteLine($"Calendar month data generation {first:yyyy-MM}: {dayBuildTimer.Elapsed.TotalMilliseconds:F3} ms; lunar conversions {conversionTimer.Elapsed.TotalMilliseconds:F3} ms for {count} dates; {Days.Count} cells published in one Days property notification.");
+		Debug.WriteLine($"Calendar month refresh {first:yyyy-MM}: {timer.Elapsed.TotalMilliseconds:F3} ms (including collection publication).");
 	}
 
-	private void UpdateSelectedCell(DateTime date, bool isSelected)
-	{
-		for (var index = 0; index < Days.Count; index++)
-		{
-			var day = Days[index];
-			if (day.Date?.Date != date) continue;
-			Days[index] = day with { IsSelected = isSelected };
-			return;
-		}
-	}
+    //private void UpdateSelectedCell(DateTime date, bool isSelected)
+    //{
+    //	var updatedDays = Days.ToArray();
+    //	for (var index = 0; index < updatedDays.Length; index++)
+    //	{
+    //		var day = updatedDays[index];
+    //		if (day.Date?.Date != date) continue;
+    //		updatedDays[index] = day with { IsSelected = isSelected };
+    //		Days = updatedDays;
+    //		return;
+    //	}
+    //}
+    private void UpdateSelectedCell(DateTime previousDate, DateTime newDate)
+    {
+        var updatedDays = Days.ToArray();
 
-	private static string LunarMonthName(int month) => month switch
+        for (var index = 0; index < updatedDays.Length; index++)
+        {
+            var day = updatedDays[index];
+
+            if (day.Date?.Date == previousDate.Date)
+                updatedDays[index] = day with { IsSelected = false };
+
+            if (day.Date?.Date == newDate.Date)
+                updatedDays[index] = day with { IsSelected = true };
+        }
+
+        Days = updatedDays;
+    }
+    private static string LunarMonthName(int month) => month switch
 	{
 		1 => "tháng Giêng", 12 => "tháng Chạp", _ => $"tháng {month}"
 	};

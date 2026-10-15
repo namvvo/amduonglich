@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage
     x:Class="VietnameseLunarCalendar.App.Views.CalendarPage"
-    x:Name="CalendarPageRoot"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:vm="clr-namespace:VietnameseLunarCalendar.App.ViewModels"
     Title="Lịch"
     BackgroundColor="#F7F5F0">
     <ScrollView>
@@ -37,26 +35,9 @@
                         <Label Grid.Column="5" Text="T7" HorizontalTextAlignment="Center" TextColor="#A43126" FontAttributes="Bold" />
                         <Label Grid.Column="6" Text="CN" HorizontalTextAlignment="Center" TextColor="#A43126" FontAttributes="Bold" />
                     </Grid>
-                    <CollectionView ItemsSource="{Binding Days}" SelectionMode="None" HeightRequest="300"
-                                    ItemsLayout="VerticalGrid, 7" ItemSizingStrategy="MeasureFirstItem">
-                        <CollectionView.ItemTemplate>
-                            <DataTemplate x:DataType="vm:CalendarDayViewModel">
-                                <Border Margin="2" Padding="1" HeightRequest="46" Stroke="Transparent"
-                                        BackgroundColor="{Binding BackgroundColor}" StrokeShape="RoundRectangle 12">
-                                    <Border.GestureRecognizers>
-                                        <TapGestureRecognizer Command="{Binding BindingContext.SelectDateCommand, Source={x:Reference CalendarPageRoot}}"
-                                                              CommandParameter="{Binding .}" />
-                                    </Border.GestureRecognizers>
-                                    <VerticalStackLayout Spacing="0" VerticalOptions="Center" HorizontalOptions="Center">
-                                        <Label Text="{Binding GregorianDay}" FontSize="15" FontAttributes="Bold"
-                                               TextColor="{Binding TextColor}" HorizontalTextAlignment="Center" />
-                                        <Label Text="{Binding LunarDay}" FontSize="9" TextColor="{Binding TextColor}"
-                                               HorizontalTextAlignment="Center" />
-                                    </VerticalStackLayout>
-                                </Border>
-                            </DataTemplate>
-                        </CollectionView.ItemTemplate>
-                    </CollectionView>
+                    <Grid x:Name="CalendarDaysGrid" HeightRequest="300" ColumnSpacing="0" RowSpacing="0"
+                          ColumnDefinitions="*,*,*,*,*,*,*"
+                          RowDefinitions="50,50,50,50,50,50" />
                     <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
                         <BoxView WidthRequest="8" HeightRequest="8" CornerRadius="4" Color="#A43126" VerticalOptions="Center" />
                         <Label Grid.Column="1" Text="Ngày được chọn" FontSize="12" TextColor="#777B76" VerticalTextAlignment="Center" />
