@@ -16,6 +16,7 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\src\VietnameseLunarCalendar.Application\VietnameseLunarCalendar.Application.csproj" />
     <ProjectReference Include="..\..\src\VietnameseLunarCalendar.Domain\VietnameseLunarCalendar.Domain.csproj" />
     <ProjectReference Include="..\..\src\VietnameseLunarCalendar.Infrastructure\VietnameseLunarCalendar.Infrastructure.csproj" />
   </ItemGroup>

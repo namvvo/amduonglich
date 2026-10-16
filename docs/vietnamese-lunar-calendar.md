@@ -28,7 +28,7 @@ Solar longitude crossings are refined numerically between daily samples. Their i
 - Lunar month listing and direct lunar input: lunar years 1900–2100.
 - Lunar-year 2100 may end in January 2101; that short spillover is accepted so the complete final supported lunar year can round-trip. Gregorian inputs in 2101 after lunar year 2100 ends are rejected.
 - Gregorian dates in January before Tết may convert to lunar year `GregorianYear - 1`; the required boundary-year envelope is handled internally.
-- Month lengths are computed from consecutive local new-moon dates and must be 29 or 30 days. A day 30 request in a 29-day month is rejected; event-level fallback behavior belongs to a later phase.
+- Month lengths are computed from consecutive local new-moon dates and must be 29 or 30 days. A direct lunar date request for day 30 in a 29-day month is rejected. A recurring lunar calendar event on day 30 is skipped in years where that month has only 29 days; it is never moved to day 29.
 
 The astronomical approximations are intended for civil calendar conversion over 1900–2100, not precision ephemeris work. Predicted ΔT values in future years and reconstructed ΔT in historical years have uncertainty; near-midnight astronomical events are inherently sensitive to model error. The conversion uses the modern proleptic Gregorian calendar across the full range and does not model historical jurisdiction-specific calendar reforms.
 

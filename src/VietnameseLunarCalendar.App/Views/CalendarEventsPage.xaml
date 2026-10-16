@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage x:Class="VietnameseLunarCalendar.App.Views.CalendarEventsPage"
+             xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             Title="Sự kiện" BackgroundColor="{AppThemeBinding Light=#F7F5F0, Dark=#1F1F1F}">
+    <ScrollView x:Name="PageScroll">
+        <VerticalStackLayout Padding="20,18,20,28" Spacing="12">
+            <Grid ColumnDefinitions="*,Auto">
+                <!--<Label Text="Quản lý sự kiện" FontSize="24" FontAttributes="Bold" TextColor="{AppThemeBinding Light=#252B2A, Dark=#F5F2EC}" VerticalTextAlignment="Center" />-->
+                <Button Grid.Column="1" Text="＋ Sự kiện mới" Clicked="OnNewEventClicked" Padding="12,6" />
+            </Grid>
+
+            <Border x:Name="SelectedDateCard" Padding="14" BackgroundColor="{AppThemeBinding Light=#F0EADF, Dark=#302E2A}" Stroke="Transparent" StrokeShape="RoundRectangle 16" IsVisible="False">
+                <VerticalStackLayout Spacing="6">
+                    <Label x:Name="SelectedDateHeading" FontAttributes="Bold" TextColor="{AppThemeBinding Light=#252B2A, Dark=#F5F2EC}" />
+                    <VerticalStackLayout x:Name="SelectedDateEvents" Spacing="4" />
+                </VerticalStackLayout>
+            </Border>
+
+            <Border x:Name="EventFormCard" Padding="16" BackgroundColor="{AppThemeBinding Light=White, Dark=#242424}" Stroke="{AppThemeBinding Light=#E9E4DA, Dark=#444444}" StrokeShape="RoundRectangle 18" IsVisible="False">
+                <VerticalStackLayout Spacing="10">
+                    <Label x:Name="FormHeading" Text="Thêm sự kiện" FontSize="19" FontAttributes="Bold" TextColor="{AppThemeBinding Light=#252B2A, Dark=#F5F2EC}" />
+                    <Entry x:Name="TitleEntry" Placeholder="Tên sự kiện *" MaxLength="120" />
+                    <Editor x:Name="DescriptionEntry" Placeholder="Mô tả (không bắt buộc)" MaxLength="2000" AutoSize="TextChanges" />
+                    <Picker x:Name="CalendarPicker" Title="Loại lịch" SelectedIndex="0" SelectedIndexChanged="OnCalendarTypeChanged">
+                        <Picker.Items><x:String>Âm lịch</x:String><x:String>Dương lịch</x:String></Picker.Items>
+                    </Picker>
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                        <Entry x:Name="DayEntry" Placeholder="Ngày" Keyboard="Numeric" />
+                        <Entry x:Name="MonthEntry" Grid.Column="1" Placeholder="Tháng" Keyboard="Numeric" />
+                    </Grid>
+                    <HorizontalStackLayout x:Name="LeapMonthPanel" Spacing="8">
+                        <Switch x:Name="LeapMonthSwitch" />
+                        <Label Text="Tháng nhuận" VerticalTextAlignment="Center" />
+                    </HorizontalStackLayout>
+                    <Picker x:Name="RecurrencePicker" Title="Lặp lại" SelectedIndex="0" SelectedIndexChanged="OnRecurrenceChanged">
+                        <Picker.Items><x:String>Hằng năm</x:String><x:String>Một lần</x:String></Picker.Items>
+                    </Picker>
+                    <Entry x:Name="YearEntry" Placeholder="Năm của sự kiện một lần" Keyboard="Numeric" IsVisible="False" />
+                    <Entry x:Name="CategoryEntry" Placeholder="Danh mục (không bắt buộc)" MaxLength="80" />
+                    <Picker x:Name="ColorPicker" Title="Màu sự kiện" SelectedIndex="0">
+                        <Picker.Items><x:String>Mặc định</x:String><x:String>Đỏ</x:String><x:String>Cam</x:String><x:String>Xanh lá</x:String><x:String>Xanh dương</x:String><x:String>Tím</x:String></Picker.Items>
+                    </Picker>
+                    <HorizontalStackLayout Spacing="8">
+                        <Switch x:Name="ReminderEnabledSwitch" Toggled="OnReminderEnabledChanged" />
+                        <Label Text="Bật nhắc nhở lúc 08:00" VerticalTextAlignment="Center" />
+                    </HorizontalStackLayout>
+                    <Entry x:Name="ReminderEntry" Placeholder="Nhắc trước (0–30 ngày)" Keyboard="Numeric" Text="0" />
+                    <Label x:Name="ReminderPermissionStatus" FontSize="12" TextColor="{AppThemeBinding Light=#777B76, Dark=#B8B3A9}" />
+                    <Button x:Name="ReminderSettingsButton" Text="Mở cài đặt thông báo" Clicked="OnReminderSettingsClicked" IsVisible="False" Padding="10,4" />
+                    <HorizontalStackLayout Spacing="10">
+                        <Button Text="Lưu sự kiện" Clicked="OnSaveClicked" BackgroundColor="#A43126" TextColor="White" />
+                        <Button Text="Hủy chỉnh sửa" Clicked="OnClearClicked" />
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <Label Text="Tất cả sự kiện đã lưu" FontSize="19" FontAttributes="Bold" TextColor="{AppThemeBinding Light=#252B2A, Dark=#F5F2EC}" Margin="0,6,0,0" />
+            <VerticalStackLayout x:Name="EventList" Spacing="6" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

@@ -3,60 +3,87 @@
     x:Class="VietnameseLunarCalendar.App.Views.CalendarPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    Title="Lịch"
-    BackgroundColor="#F7F5F0">
+    Shell.NavBarIsVisible="False"
+    >
     <ScrollView>
-        <VerticalStackLayout Padding="20,18,20,28" Spacing="18">
+        <VerticalStackLayout Padding="20,0,20,28" Spacing="18">
             <Grid ColumnDefinitions="*,Auto" VerticalOptions="Center">
                 <VerticalStackLayout Spacing="2">
-                    <Label Text="ÂM DƯƠNG LỊCH" FontSize="12" CharacterSpacing="2" TextColor="#A43126" FontAttributes="Bold" />
-                    <Label Text="Lịch Việt Nam" FontSize="28" FontAttributes="Bold" TextColor="#252B2A" />
+                    <Label Text="ÂM DƯƠNG LỊCH" FontSize="12" CharacterSpacing="2" TextColor="{AppThemeBinding Light=#A43126, Dark=#F07469}" FontAttributes="Bold" />
+                    <Label Text="Lịch Việt Nam" FontSize="28" FontAttributes="Bold" TextColor="{AppThemeBinding Light=#252B2A, Dark=#F5F2EC}" />
                 </VerticalStackLayout>
-                <Button Grid.Column="1" Text="Hôm nay" Command="{Binding GoToTodayCommand}"
-                        BackgroundColor="#EEE9DF" TextColor="#252B2A" CornerRadius="18" Padding="16,8" />
+                <Button x:Name="ThemeToggleButton" Grid.Column="1" Text="☀" FontSize="21"
+                        WidthRequest="42" HeightRequest="42" MinimumWidthRequest="42" MinimumHeightRequest="42"
+                        Padding="0" CornerRadius="21" VerticalOptions="End" Margin="0,0,0,2"
+                        BackgroundColor="{AppThemeBinding Light=#F0EADF, Dark=#302E2A}"
+                        TextColor="{AppThemeBinding Light=#A43126, Dark=#F07469}"
+                        Clicked="OnThemeToggleClicked" />
             </Grid>
 
-            <Border Padding="14" BackgroundColor="White" Stroke="#E9E4DA" StrokeShape="RoundRectangle 20">
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+                <Button Text="＋ Thêm sự kiện" Clicked="OnAddEventClicked" BackgroundColor="#A43126" TextColor="White" CornerRadius="14" Padding="6,10" FontSize="13" MinimumHeightRequest="50" LineBreakMode="WordWrap" HorizontalOptions="Fill" />
+                <Button Grid.Column="1" Text="☷ Danh sách sự kiện" Clicked="OnOpenEventsClicked" BackgroundColor="{AppThemeBinding Light=#EEE9DF, Dark=#302E2A}" TextColor="{AppThemeBinding Light=#252B2A, Dark=#F5F2EC}" CornerRadius="14" Padding="6,10" FontSize="13" MinimumHeightRequest="50" LineBreakMode="WordWrap" HorizontalOptions="Fill" />
+            </Grid>
+
+            <Border Padding="14" BackgroundColor="{AppThemeBinding Light=White, Dark=#242424}" Stroke="{AppThemeBinding Light=#E9E4DA, Dark=#444444}" StrokeShape="RoundRectangle 20">
                 <VerticalStackLayout Spacing="12">
                     <Grid ColumnDefinitions="48,*,48" VerticalOptions="Center">
-                        <Button Text="‹" FontSize="28" TextColor="#A43126" BackgroundColor="Transparent" Padding="0"
+                        <Button Text="‹" FontSize="28" TextColor="{AppThemeBinding Light=#A43126, Dark=#F07469}" BackgroundColor="Transparent" Padding="0"
                                 Command="{Binding PreviousMonthCommand}" IsEnabled="{Binding CanGoPrevious}" />
                         <Label Grid.Column="1" Text="{Binding MonthTitle}" FontSize="20" FontAttributes="Bold"
-                               HorizontalTextAlignment="Center" VerticalTextAlignment="Center" TextColor="#252B2A" />
-                        <Button Grid.Column="2" Text="›" FontSize="28" TextColor="#A43126" BackgroundColor="Transparent" Padding="0"
+                               HorizontalTextAlignment="Center" VerticalTextAlignment="Center" TextColor="{AppThemeBinding Light=#252B2A, Dark=#F5F2EC}" />
+                        <Button Grid.Column="2" Text="›" FontSize="28" TextColor="{AppThemeBinding Light=#A43126, Dark=#F07469}" BackgroundColor="Transparent" Padding="0"
                                 Command="{Binding NextMonthCommand}" IsEnabled="{Binding CanGoNext}" />
                     </Grid>
+                    <Border Padding="12,6" BackgroundColor="{AppThemeBinding Light=#F1ECFF, Dark=#342D49}" Stroke="Transparent" StrokeShape="RoundRectangle 12" HorizontalOptions="Center">
+                        <Label Text="{Binding LunarMonthRange}" FontSize="13" HorizontalTextAlignment="Center" TextColor="{AppThemeBinding Light=#34205F, Dark=#D8C9FF}" />
+                    </Border>
                     <Grid ColumnDefinitions="*,*,*,*,*,*,*" ColumnSpacing="0">
-                        <Label Text="T2" HorizontalTextAlignment="Center" TextColor="#777B76" FontAttributes="Bold" />
-                        <Label Grid.Column="1" Text="T3" HorizontalTextAlignment="Center" TextColor="#777B76" FontAttributes="Bold" />
-                        <Label Grid.Column="2" Text="T4" HorizontalTextAlignment="Center" TextColor="#777B76" FontAttributes="Bold" />
-                        <Label Grid.Column="3" Text="T5" HorizontalTextAlignment="Center" TextColor="#777B76" FontAttributes="Bold" />
-                        <Label Grid.Column="4" Text="T6" HorizontalTextAlignment="Center" TextColor="#777B76" FontAttributes="Bold" />
-                        <Label Grid.Column="5" Text="T7" HorizontalTextAlignment="Center" TextColor="#A43126" FontAttributes="Bold" />
-                        <Label Grid.Column="6" Text="CN" HorizontalTextAlignment="Center" TextColor="#A43126" FontAttributes="Bold" />
+                        <Label Text="T2" HorizontalTextAlignment="Center" TextColor="{AppThemeBinding Light=#777B76, Dark=#B8B3A9}" FontAttributes="Bold" />
+                        <Label Grid.Column="1" Text="T3" HorizontalTextAlignment="Center" TextColor="{AppThemeBinding Light=#777B76, Dark=#B8B3A9}" FontAttributes="Bold" />
+                        <Label Grid.Column="2" Text="T4" HorizontalTextAlignment="Center" TextColor="{AppThemeBinding Light=#777B76, Dark=#B8B3A9}" FontAttributes="Bold" />
+                        <Label Grid.Column="3" Text="T5" HorizontalTextAlignment="Center" TextColor="{AppThemeBinding Light=#777B76, Dark=#B8B3A9}" FontAttributes="Bold" />
+                        <Label Grid.Column="4" Text="T6" HorizontalTextAlignment="Center" TextColor="{AppThemeBinding Light=#777B76, Dark=#B8B3A9}" FontAttributes="Bold" />
+                        <Label Grid.Column="5" Text="T7" HorizontalTextAlignment="Center" TextColor="{AppThemeBinding Light=#A43126, Dark=#F07469}" FontAttributes="Bold" />
+                        <Label Grid.Column="6" Text="CN" HorizontalTextAlignment="Center" TextColor="{AppThemeBinding Light=#A43126, Dark=#F07469}" FontAttributes="Bold" />
                     </Grid>
                     <Grid x:Name="CalendarDaysGrid" HeightRequest="300" ColumnSpacing="0" RowSpacing="0"
                           ColumnDefinitions="*,*,*,*,*,*,*"
                           RowDefinitions="50,50,50,50,50,50" />
-                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
-                        <BoxView WidthRequest="8" HeightRequest="8" CornerRadius="4" Color="#A43126" VerticalOptions="Center" />
-                        <Label Grid.Column="1" Text="Ngày được chọn" FontSize="12" TextColor="#777B76" VerticalTextAlignment="Center" />
+                    <Grid ColumnDefinitions="*,*,*" ColumnSpacing="4" Margin="2,2,0,0">
+                        <HorizontalStackLayout Spacing="6" HorizontalOptions="Start">
+                            <BoxView WidthRequest="10" HeightRequest="10" CornerRadius="2" Color="#A43126" VerticalOptions="Center" />
+                            <Label Text="Ngày đang chọn" FontSize="11" TextColor="{AppThemeBinding Light=#777B76, Dark=#B8B3A9}" VerticalTextAlignment="Center" />
+                        </HorizontalStackLayout>
+                        <HorizontalStackLayout Grid.Column="1" Spacing="6" HorizontalOptions="Center">
+                            <BoxView WidthRequest="10" HeightRequest="10" CornerRadius="2" Color="#168A36" VerticalOptions="Center" />
+                            <Label Text="Hôm nay" FontSize="11" TextColor="{AppThemeBinding Light=#777B76, Dark=#B8B3A9}" VerticalTextAlignment="Center" />
+                        </HorizontalStackLayout>
+                        <HorizontalStackLayout Grid.Column="2" Spacing="6" HorizontalOptions="End">
+                            <Ellipse WidthRequest="9" HeightRequest="9" Fill="#F47A00" VerticalOptions="Center" />
+                            <Label Text="Có sự kiện" FontSize="11" TextColor="{AppThemeBinding Light=#777B76, Dark=#B8B3A9}" VerticalTextAlignment="Center" />
+                        </HorizontalStackLayout>
                     </Grid>
                 </VerticalStackLayout>
             </Border>
 
-            <Border Padding="18" BackgroundColor="#F0EADF" Stroke="Transparent" StrokeShape="RoundRectangle 20">
-                <VerticalStackLayout Spacing="8">
-                    <Label Text="NGÀY ĐANG XEM" FontSize="11" CharacterSpacing="1.5" TextColor="#777B76" FontAttributes="Bold" />
-                    <Label Text="{Binding SelectedGregorian}" FontSize="18" FontAttributes="Bold" TextColor="#252B2A" />
-                    <Label Text="{Binding SelectedLunar}" FontSize="15" TextColor="#A43126" />
-                    <DatePicker Date="{Binding SelectedDate, Mode=TwoWay}" MinimumDate="{Binding MinimumDate}"
-                                MaximumDate="{Binding MaximumDate}" Format="dd/MM/yyyy"
-                                TextColor="#252B2A" />
+            <Border Padding="16" BackgroundColor="{AppThemeBinding Light=#F0EADF, Dark=#302E2A}" Stroke="Transparent" StrokeShape="RoundRectangle 20">
+                <VerticalStackLayout Spacing="10">
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                        <VerticalStackLayout Spacing="4" VerticalOptions="Center">
+                            <Label Text="{Binding SelectedGregorian}" FontSize="16" FontAttributes="Bold" TextColor="{AppThemeBinding Light=#252B2A, Dark=#F5F2EC}" />
+                            <Label Text="{Binding SelectedLunar}" FontSize="13" TextColor="{AppThemeBinding Light=#A43126, Dark=#F07469}" LineBreakMode="WordWrap" />
+                        </VerticalStackLayout>
+                        <Button Grid.Column="1" Text="＋ Thêm" Clicked="OnAddSelectedDateEventClicked"
+                                BackgroundColor="White" TextColor="#A43126" CornerRadius="16" Padding="12,8" VerticalOptions="Center" />
+                    </Grid>
+                    <VerticalStackLayout x:Name="SelectedEventCards" Spacing="8" />
+                    <Label Text="{Binding SelectedEventsMessage}" IsVisible="{Binding HasNoSelectedEvents}"
+                           FontSize="13" TextColor="{AppThemeBinding Light=#777B76, Dark=#B8B3A9}" Margin="2,4,0,0" />
                 </VerticalStackLayout>
             </Border>
             <Label Text="Lịch âm Việt Nam · múi giờ UTC+7 · hoạt động ngoại tuyến" FontSize="12"
-                   TextColor="#777B76" HorizontalTextAlignment="Center" />
+                   TextColor="{AppThemeBinding Light=#777B76, Dark=#B8B3A9}" HorizontalTextAlignment="Center" />
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>
